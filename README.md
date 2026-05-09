@@ -370,3 +370,5 @@ You can explain the main engineering decisions like this:
 - Add model selection in the UI
 - Add syntax highlighting in the code editor
 - Add Dockerfile and deployment documentation
+
+Contributors who want to work on any of the future improvements listed above are welcome to raise a pull request.
