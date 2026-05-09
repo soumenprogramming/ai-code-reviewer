@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>AI Code Reviewer</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<main class="app-shell">
+	<header class="topbar">
+		<div>
+			<p class="eyebrow">AI review desk</p>
+			<h1>Code Review Command Center</h1>
+		</div>
+		<div class="signal-strip" aria-hidden="true">
+			<span></span>
+			<span></span>
+			<span></span>
+		</div>
+	</header>
+
+	<section class="workspace">
+		<div class="input-panel">
+			<div class="mode-tabs" role="tablist" aria-label="Review mode">
+				<button id="code-tab" class="mode-tab active" type="button" aria-controls="code-mode">Code</button>
+				<button id="pr-tab" class="mode-tab" type="button" aria-controls="pr-mode">Pull Request</button>
+			</div>
+
+			<section id="code-mode" class="mode-panel active">
+				<form id="review-form" class="review-form">
+					<div class="field-row">
+						<label for="language">Language</label>
+						<input id="language" name="language" type="text" placeholder="Java, Python, TypeScript..." required>
+					</div>
+
+					<div class="editor-frame">
+						<div class="editor-toolbar">
+							<span class="window-dot red"></span>
+							<span class="window-dot yellow"></span>
+							<span class="window-dot green"></span>
+							<span class="editor-title">review-input</span>
+						</div>
+						<label class="sr-only" for="code">Code</label>
+						<textarea id="code" name="code" placeholder="Paste your code here..." required></textarea>
+					</div>
+
+					<button id="submit-button" class="primary-action" type="submit">Review Code</button>
+				</form>
+			</section>
+
+			<section id="pr-mode" class="mode-panel">
+				<form id="pr-review-form" class="review-form pr-form">
+					<label for="pr-url">GitHub Pull Request URL</label>
+					<div class="pr-input-wrap">
+						<span class="input-prefix">github.com</span>
+						<input id="pr-url" name="prUrl" type="url" placeholder="https://github.com/owner/repo/pull/123" required>
+					</div>
+					<button id="pr-submit-button" class="primary-action" type="submit">Review PR</button>
+				</form>
+			</section>
+		</div>
+
+		<aside class="output-card">
+			<div class="output-header">
+				<div>
+					<p class="eyebrow">Reviewer output</p>
+					<h2>Findings</h2>
+				</div>
+				<span id="status" class="status">Idle</span>
+			</div>
+			<pre id="review-output" class="review-output">Your review will appear here.</pre>
+		</aside>
+	</section>
+</main>
+
+<script src="/app.js"></script>
+</body>
+</html>
