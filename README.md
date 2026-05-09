@@ -344,20 +344,6 @@ AI review is not 100% accurate. It can:
 
 The app improves usefulness by making prompts structured and language-aware, but final decisions should still be made by developers.
 
-## Interview Explanation
-
-You can explain the project like this:
-
-> I built a Spring Boot AI Code Reviewer application. It supports both pasted source code review and GitHub Pull Request review. For pasted code, the user provides a language and code snippet, and the backend builds a structured AI review prompt. For PR review, the app parses the GitHub PR URL, calls the GitHub REST API to fetch changed files, collects file metadata and patches, detects languages from filenames, builds one language-aware prompt, and sends it to OpenAI for review.
-
-You can explain the architecture like this:
-
-> The application follows a layered structure with controller, service, DTO, configuration, and exception handling layers. `CodeReviewController` exposes `/api/review` and `/api/review-pr`. `CodeReviewService` is responsible for prompt generation. `GitHubPullRequestService` handles GitHub API integration. `LanguageDetectionService` makes PR prompts language-aware. `OpenAiReviewClient` integrates with OpenAI, while `PlaceholderAiReviewClient` provides a fallback implementation.
-
-You can explain the main engineering decisions like this:
-
-> I kept the AI integration behind an `AiReviewClient` interface so the rest of the application does not depend directly on OpenAI. I also kept secrets in environment variables, added clean API error handling, and added tests around URL parsing, language detection, prompt generation, and validation behavior.
-
 ## Possible Future Improvements
 
 - Add repository-wide context for better PR reviews
