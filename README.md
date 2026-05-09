@@ -11,11 +11,7 @@ The backend builds structured review prompts, calls OpenAI when configured, and 
 
 ## Live App
 
-The app is running at:
-
-```text
-https://ai-code-reviewer-389730946099.asia-south1.run.app/
-```
+The app is running at [https://ai-code-reviewer-389730946099.asia-south1.run.app/](https://ai-code-reviewer-389730946099.asia-south1.run.app/).
 
 ## Features
 
