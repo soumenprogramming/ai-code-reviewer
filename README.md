@@ -358,3 +358,5 @@ The app improves usefulness by making prompts structured and language-aware, but
 - Add Dockerfile and deployment documentation
 
 Contributors who want to work on any of the future improvements listed above are welcome to raise a pull request.
+
+Himanshu Singh 
