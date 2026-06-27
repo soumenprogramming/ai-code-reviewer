@@ -1,7 +1,10 @@
 package com.soumenprogramming.ai_code_reviewer.service;
 
 import com.soumenprogramming.ai_code_reviewer.dto.PullRequestReviewData;
+import com.soumenprogramming.ai_code_reviewer.dto.RulePack;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class PullRequestReviewService {
@@ -18,5 +21,10 @@ public class PullRequestReviewService {
 	public String reviewPullRequest(String prUrl) {
 		PullRequestReviewData reviewData = gitHubPullRequestService.fetchPullRequestReviewData(prUrl);
 		return codeReviewService.reviewPullRequest(reviewData);
+	}
+
+	public String reviewPullRequestWithRules(String prUrl, List<RulePack> rulePacks) {
+		PullRequestReviewData reviewData = gitHubPullRequestService.fetchPullRequestReviewData(prUrl);
+		return codeReviewService.reviewPullRequestWithRules(reviewData, rulePacks);
 	}
 }

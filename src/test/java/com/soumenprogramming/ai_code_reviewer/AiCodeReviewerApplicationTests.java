@@ -10,8 +10,8 @@ import com.soumenprogramming.ai_code_reviewer.service.GitHubPullRequestService;
 import com.soumenprogramming.ai_code_reviewer.service.LanguageDetectionService;
 import com.soumenprogramming.ai_code_reviewer.service.PlaceholderAiReviewClient;
 import com.soumenprogramming.ai_code_reviewer.service.PullRequestReviewService;
+import com.soumenprogramming.ai_code_reviewer.service.ReviewRulePackService;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.server.ResponseStatusException;
 import tools.jackson.databind.ObjectMapper;
 
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
+@com.soumenprogramming.ai_code_reviewer.SpringBootTest
 class AiCodeReviewerApplicationTests {
 
 	@Test
@@ -57,9 +57,11 @@ class AiCodeReviewerApplicationTests {
 	}
 
 	private CodeReviewController createController() {
+		ReviewRulePackService reviewRulePackService = new ReviewRulePackService();
 		CodeReviewService codeReviewService = new CodeReviewService(
 			new PlaceholderAiReviewClient(),
-			new LanguageDetectionService()
+			new LanguageDetectionService(),
+			reviewRulePackService
 		);
 		GitHubProperties gitHubProperties = new GitHubProperties();
 		GitHubPullRequestService gitHubPullRequestService = new GitHubPullRequestService(
@@ -71,6 +73,7 @@ class AiCodeReviewerApplicationTests {
 			gitHubPullRequestService,
 			codeReviewService
 		);
-		return new CodeReviewController(codeReviewService, pullRequestReviewService);
+
+		return new CodeReviewController(codeReviewService, pullRequestReviewService, gitHubPullRequestService);
 	}
 }

@@ -160,7 +160,10 @@ public class GitHubPullRequestService {
 			default -> "GitHub request failed. Please try again later.";
 		};
 
-		String message = extractGitHubMessage(response.body(), fallbackMessage);
+		String message = switch (response.statusCode()) {
+			case 401, 403, 404 -> fallbackMessage;
+			default -> extractGitHubMessage(response.body(), fallbackMessage);
+		};
 		HttpStatus status = response.statusCode() == 404 ? HttpStatus.NOT_FOUND : HttpStatus.BAD_GATEWAY;
 		if (response.statusCode() == 401 || response.statusCode() == 403) {
 			status = HttpStatus.UNAUTHORIZED;

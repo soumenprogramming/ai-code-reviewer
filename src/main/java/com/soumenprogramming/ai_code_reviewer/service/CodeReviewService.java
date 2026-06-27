@@ -3,6 +3,7 @@ package com.soumenprogramming.ai_code_reviewer.service;
 import com.soumenprogramming.ai_code_reviewer.dto.CodeReviewRequest;
 import com.soumenprogramming.ai_code_reviewer.dto.PullRequestFile;
 import com.soumenprogramming.ai_code_reviewer.dto.PullRequestReviewData;
+import com.soumenprogramming.ai_code_reviewer.dto.RulePack;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,10 +14,14 @@ public class CodeReviewService {
 
 	private final AiReviewClient aiReviewClient;
 	private final LanguageDetectionService languageDetectionService;
+	private final ReviewRulePackService reviewRulePackService;
 
-	public CodeReviewService(AiReviewClient aiReviewClient, LanguageDetectionService languageDetectionService) {
+	public CodeReviewService(AiReviewClient aiReviewClient,
+			LanguageDetectionService languageDetectionService,
+			ReviewRulePackService reviewRulePackService) {
 		this.aiReviewClient = aiReviewClient;
 		this.languageDetectionService = languageDetectionService;
+		this.reviewRulePackService = reviewRulePackService;
 	}
 
 	public String reviewCode(CodeReviewRequest request) {
@@ -26,6 +31,12 @@ public class CodeReviewService {
 
 	public String reviewPullRequest(PullRequestReviewData reviewData) {
 		String prompt = buildPullRequestReviewPrompt(reviewData);
+		return callAiModel(prompt);
+	}
+
+	public String reviewPullRequestWithRules(PullRequestReviewData reviewData, List<RulePack> rulePacks) {
+		List<RulePack> validatedRulePacks = reviewRulePackService.validateRulePacks(rulePacks);
+		String prompt = buildPullRequestReviewPromptWithRules(reviewData, validatedRulePacks);
 		return callAiModel(prompt);
 	}
 
@@ -89,6 +100,45 @@ public class CodeReviewService {
 			Diff details:
 			""".formatted(
 			buildLanguageSpecificGuidance(languageCounts),
+			reviewData.prUrl(),
+			reviewData.coordinates().owner(),
+			reviewData.coordinates().repo(),
+			reviewData.coordinates().pullNumber(),
+			reviewData.files().size(),
+			formatLanguageSummary(languageCounts)
+		));
+
+		appendFiles(prompt, reviewData.files());
+		return prompt.toString();
+	}
+
+	String buildPullRequestReviewPromptWithRules(PullRequestReviewData reviewData, List<RulePack> rulePacks) {
+		Map<String, Long> languageCounts = languageDetectionService.detectLanguageCounts(reviewData.files());
+		StringBuilder prompt = new StringBuilder("""
+			You are an expert AI code reviewer analyzing a GitHub pull request diff.
+			Review the pull request using the custom rule packs provided by the organization.
+			Apply every rule in every rule pack strictly.
+			Reference files when possible.
+
+			Organization rule packs:
+			%s
+
+			Response format:
+			- Start with "Summary:"
+			- Then a "Findings:" section with concise bullet points grouped by rule pack where helpful
+			- End with "Suggested next steps:"
+			- If no significant issue is found, say so clearly
+
+			Pull request:
+			- URL: %s
+			- Repository: %s/%s
+			- Pull number: %d
+			- Changed files: %d
+			- Detected languages: %s
+
+			Diff details:
+			""".formatted(
+			reviewRulePackService.buildRulesSection(rulePacks),
 			reviewData.prUrl(),
 			reviewData.coordinates().owner(),
 			reviewData.coordinates().repo(),
